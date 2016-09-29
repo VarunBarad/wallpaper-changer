@@ -32,6 +32,11 @@ fun getFiles(file: File): MutableList<String> {
     return files
 }
 
+fun toFileUri(filePath: String): String {
+    val escapedPath = filePath.replace("\"", "\\\"").replace("\'", "\\\'")
+    return "\"file://$escapedPath\""
+}
+
 fun main(args: Array<String>) {
     val baseDirectory: String
     if (args.isNotEmpty()) {
@@ -41,18 +46,19 @@ fun main(args: Array<String>) {
     }
 
     val baseFile: File = File(baseDirectory)
-    if (baseFile.exists() && baseFile.isDirectory) {
-        println("file exists & is directory")
-        getFiles(baseFile).forEach(::println)
+    if (baseFile.exists()) {
+        val filePaths = getFiles(baseFile).filter { s -> s.matches(Regex("(.+\\.(?i)(jpg|png|gif|bmp))$")) }
+        filePaths.map(::toFileUri).forEach(::println)
+
+
+        val process: Process? = Runtime.getRuntime().exec("gsettings get org.gnome.desktop.background picture-uri")
+
+        if (process != null) {
+            val input: Scanner = Scanner(process.inputStream)
+            println(input.nextLine())
+            input.close()
+        }
     } else {
-
-    }
-
-    val process: Process? = Runtime.getRuntime().exec("gsettings get org.gnome.desktop.background picture-uri")
-
-    if (process != null) {
-        val input: Scanner = Scanner(process.inputStream)
-        println(input.nextLine())
-        input.close()
+        println("The specified file/directory does not exist. Try again.")
     }
 }
