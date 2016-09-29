@@ -33,8 +33,31 @@ fun getFiles(file: File): MutableList<String> {
 }
 
 fun toFileUri(filePath: String): String {
-    val escapedPath = filePath.replace("\"", "\\\"").replace("\'", "\\\'")
+    val escapedPath = filePath.replace("\\\"", "\"").replace("\\\'", "\'").replace("\"", "\\\"").replace("\'", "\\\'")
     return "\"file://$escapedPath\""
+}
+
+fun extractFilePathFromUri(fileUri: String): String {
+    return fileUri.substring(7)
+}
+
+fun getCurrentBackgroundUri(): String {
+    var currentBackground: String
+    val process: Process? = Runtime.getRuntime().exec("gsettings get org.gnome.desktop.background picture-uri")
+
+    if (process != null) {
+        val input: Scanner = Scanner(process.inputStream)
+
+        currentBackground = input.nextLine().substringAfter('\'').substringBeforeLast('\'')
+        input.close()
+    } else {
+        currentBackground = "file://"
+    }
+
+    currentBackground = extractFilePathFromUri(currentBackground)
+    currentBackground = toFileUri(currentBackground)
+
+    return currentBackground
 }
 
 fun main(args: Array<String>) {
@@ -50,14 +73,7 @@ fun main(args: Array<String>) {
         val filePaths = getFiles(baseFile).filter { s -> s.matches(Regex("(.+\\.(?i)(jpg|png|gif|bmp))$")) }
         filePaths.map(::toFileUri).forEach(::println)
 
-
-        val process: Process? = Runtime.getRuntime().exec("gsettings get org.gnome.desktop.background picture-uri")
-
-        if (process != null) {
-            val input: Scanner = Scanner(process.inputStream)
-            println(input.nextLine())
-            input.close()
-        }
+        println(getCurrentBackgroundUri())
     } else {
         println("The specified file/directory does not exist. Try again.")
     }
