@@ -1,6 +1,7 @@
 package com.varunbarad
 
 import java.io.File
+import java.security.SecureRandom
 import java.util.*
 
 /**
@@ -11,6 +12,11 @@ import java.util.*
 
 fun isImageFile(fileUri: String): Boolean {
     return fileUri.matches(Regex("(.+\\.(?i)(jpg|png|gif|bmp))$"))
+}
+
+fun getRandomElementIndex(length: Int): Int {
+    val random = SecureRandom()
+    return random.nextInt(length)
 }
 
 fun getFiles(file: File): MutableList<String> {
