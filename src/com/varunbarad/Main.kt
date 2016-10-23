@@ -100,7 +100,7 @@ fun main(args: Array<String>) {
             newBackgroundUri = filePaths[getRandomElementIndex(filePaths.size)]
         } while (newBackgroundUri == getCurrentBackgroundUri())
 
-        println(newBackgroundUri)
+        setBackground(newBackgroundUri)
     } else {
         println("The specified file/directory does not exist. Try again.")
     }
