@@ -9,6 +9,10 @@ import java.util.*
  * Project: wallpaper-changer
  */
 
+fun isImageFile(fileUri: String): Boolean {
+    return fileUri.matches(Regex("(.+\\.(?i)(jpg|png|gif|bmp))$"))
+}
+
 fun getFiles(file: File): MutableList<String> {
     val files: MutableList<String> = mutableListOf()
 
@@ -80,8 +84,10 @@ fun main(args: Array<String>) {
 
     val baseFile: File = File(baseDirectory)
     if (baseFile.exists()) {
-        val filePaths = getFiles(baseFile).filter { s -> s.matches(Regex("(.+\\.(?i)(jpg|png|gif|bmp))$")) }
-        filePaths.map(::toFileUri).forEach(::println)
+        val filePaths = getFiles(baseFile)
+                .filter(::isImageFile)
+                .map(::toFileUri)
+        filePaths.forEach(::println)
 
         println(getCurrentBackgroundUri())
     } else {
