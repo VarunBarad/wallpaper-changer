@@ -95,7 +95,12 @@ fun main(args: Array<String>) {
                 .map(::toFileUri)
         filePaths.forEach(::println)
 
-        println(getCurrentBackgroundUri())
+        var newBackgroundUri: String
+        do {
+            newBackgroundUri = filePaths[getRandomElementIndex(filePaths.size)]
+        } while (newBackgroundUri == getCurrentBackgroundUri())
+
+        println(newBackgroundUri)
     } else {
         println("The specified file/directory does not exist. Try again.")
     }
