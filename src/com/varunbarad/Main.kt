@@ -93,7 +93,6 @@ fun main(args: Array<String>) {
         val filePaths = getFiles(baseFile)
                 .filter(::isImageFile)
                 .map(::toFileUri)
-        filePaths.forEach(::println)
 
         var newBackgroundUri: String
         do {
