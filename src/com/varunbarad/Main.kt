@@ -71,7 +71,7 @@ fun getCurrentBackgroundUri(): String {
 }
 
 fun setBackground(fileUri: String): Unit {
-    val process: Process? = Runtime.getRuntime().exec("gsettings set org.gnome.desktop.background picture-uri \"$fileUri\"")
+    val process: Process? = Runtime.getRuntime().exec("gsettings set org.gnome.desktop.background picture-uri $fileUri")
 
     if (process != null) {
         println("Background changed successfully to $fileUri")
@@ -93,13 +93,21 @@ fun main(args: Array<String>) {
         val filePaths = getFiles(baseFile)
                 .filter(::isImageFile)
                 .map(::toFileUri)
+                .filter { !it.matches(Regex(".*\\s.*")) } //Need to remove file-names containing spaces, Reason not found
+                .toMutableList()
 
-        var newBackgroundUri: String
-        do {
-            newBackgroundUri = filePaths[getRandomElementIndex(filePaths.size)]
-        } while (newBackgroundUri == getCurrentBackgroundUri())
+        if (!filePaths.isEmpty()) {
+            var newBackgroundUri: String
+            do {
+                val index = getRandomElementIndex(filePaths.size)
+                newBackgroundUri = filePaths[index]
+                filePaths.removeAt(index)
+            } while (newBackgroundUri == getCurrentBackgroundUri() && !filePaths.isEmpty())
 
-        setBackground(newBackgroundUri)
+            setBackground(newBackgroundUri)
+        } else {
+            println("There are no photos in the specified folder.")
+        }
     } else {
         println("The specified file/directory does not exist. Try again.")
     }
