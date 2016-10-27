@@ -71,7 +71,7 @@ fun getCurrentBackgroundUri(): String {
 }
 
 fun setBackground(fileUri: String): Unit {
-    val process: Process? = Runtime.getRuntime().exec("gsettings set org.gnome.desktop.background picture-uri $fileUri")
+    val process: Process? = Runtime.getRuntime().exec("gsettings set org.gnome.desktop.background picture-uri \"$fileUri\"")
 
     if (process != null) {
         println("Background changed successfully to $fileUri")
